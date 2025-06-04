@@ -26,36 +26,35 @@ INSERT INTO IAMARKS VALUES ('1BI21CS003', 'CS401', 103, 14, 15, 16);
 
 1.
 SELECT s.*
-FROM STUDENT s
-JOIN CLASS c ON s.USN = c.USN
-JOIN SEMSEC ss ON c.SSID = ss.SSID
-WHERE ss.Sem = 4 AND ss.Sec = 'C';
+FROM STUDENT s, CLASS c, SEMSEC ss where s.USN =c.USN and c.SSID = ss.SSID and ss.Sem = 4 AND ss.Sec = 'C';
 
 2.
-SELECT ss.Sem, ss.Sec, s.Gender, COUNT(*) AS Total
-FROM STUDENT s
-JOIN CLASS c ON s.USN = c.USN
-JOIN SEMSEC ss ON c.SSID = ss.SSID
+SELECT ss.Sem, ss.Sec, s.Gender, COUNT(s.gender) AS Total
+FROM STUDENT s, CLASS c,SEMSEC ss where s.USN=c.USN and c.SSID = ss.SSID
 GROUP BY ss.Sem, ss.Sec, s.Gender;
 
 3.
-SELECT Test1
-FROM IAMARKS
-WHERE USN = '1BI21CS101';
+create view Test1_marks as select USN,subcode,test1 from IAMARKS where 
+USN ='1BI21CS101';
 
+select * from Test1_marks;
 
 
 4.
 
-update IAMARKS set finalia=(greater(test1+test2,test2+test3,test1+test3)/2);
+update IAMARKS set finalia=(greatest(test1+test2,test2+test3,test1+test3)/2);
 
 5.
-SELECT USN, Subcode, FinalIA,
+select s.USN, s.sname,s.address, s.phone,s.gender(
        CASE
-         WHEN FinalIA >= 17 THEN 'Outstanding'
+         WHEN FinalIA between 17 and 20 THEN 'Outstanding'
          WHEN FinalIA BETWEEN 12 AND 16 THEN 'Average'
          ELSE 'Weak'
-       END AS Category
-FROM IAMARKS
-WHERE SSID IN (101, 102); -- 8th sem A, B sections
+       END)
+AS Cat
+FROM student s, semsec ss, IAMARKS IA
+WHERE s.USN = IA.USN and ss.SSID = IA.SSID and ss.sem =8;
 
+update IAMARKS set finalia =null;
+
+select * from IAMARKS;
