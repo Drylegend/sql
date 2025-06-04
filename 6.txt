@@ -28,48 +28,45 @@ FROM EMPLOYEES e
 JOIN CERTIFIED c ON e.eid = c.eid
 WHERE e.salary > 80000;
 
+select distinct a.aname from aircraft a, certified c, employees e where a.aid=c.aid and c.eid = e.eid and e.salary>80000;
+
 
 2.
 SELECT c.eid, MAX(a.cruisingrange)
-FROM CERTIFIED c
-JOIN AIRCRAFT a ON c.aid = a.aid
+FROM CERTIFIED c,AIRCRAFT a where c.aid = a.aid
 GROUP BY c.eid
-HAVING COUNT(DISTINCT c.aid) > 3;
+HAVING COUNT(*) > 3;
 
 
 
 3.
-SELECT ename
+SELECT e.ename
 FROM EMPLOYEES
-WHERE salary < (
-  SELECT price FROM FLIGHT
-  WHERE flight_from = 'Bangalore' AND flight_to = 'Frankfurt'
+WHERE e.salary < (
+  SELECT min(price) FROM FLIGHT f
+  WHERE f.from = 'Bangalore' AND f.to = 'Frankfurt'
 );
 
 
 4.
-SELECT a.aname, AVG(e.salary) AS avg_salary
-FROM AIRCRAFT a
-JOIN CERTIFIED c ON a.aid = c.aid
-JOIN EMPLOYEES e ON c.eid = e.eid
-WHERE a.cruisingrange > 1000
-GROUP BY a.aname;
+SELECT a.aid,a.aname, AVG(e.salary) AS avg_salary
+FROM AIRCRAFT a,CERTIFIED c,EMPLOYEES e where
+a.aid=c.aid and c.eid = e.eid and a.cruisingrange > 1000
+GROUP BY a.aid, a.aname;
 
 
 5.
 SELECT DISTINCT e.ename
-FROM EMPLOYEES e
-JOIN CERTIFIED c ON e.eid = c.eid
-JOIN AIRCRAFT a ON c.aid = a.aid
-WHERE a.aname LIKE '%Boeing%';
+FROM EMPLOYEES e, AIRCRAFT a, certified c where e.eid= c.eid and c.aid = a.aid and
+ a.aname LIKE '%Boeing%';
 
 
 6.
-SELECT a.*
+SELECT a.aid
 FROM AIRCRAFT a
 WHERE a.cruisingrange > (
   SELECT MIN(distance)
   FROM FLIGHT
-  WHERE flight_from = 'Bangalore' AND flight_to = 'Delhi'
+  WHERE from = 'Bangalore' AND to = 'Delhi'
 );
 
